@@ -16,10 +16,25 @@ do
     echo -n $? > "${outdir}/${dotted}.code"
 done
 
+function check_stdout() {
+    if [ $(wc -l $1 | awk '{print $1}') -eq 2 ]
+    then
+        if [ "$(tail -n 1 $1)" != "    ----------" ]
+        then
+            echo Fail
+            exit 2
+        fi
+    fi
+}
+
 if ! grep -v 0 ${outdir}/*.code
 then
     if [[ -z $(cat ${outdir}/*.err) ]]
     then
+        for outfile in ${outdir}/*.out
+        do
+            check_stdout $outfile
+        done
         echo Ok
         exit 0
     fi
