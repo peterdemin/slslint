@@ -6,3 +6,5 @@ RUN yum -y install sudo
 
 COPY minion /etc/salt/minion
 COPY slslint.sh /usr/bin/slslint
+
+CMD slslint
