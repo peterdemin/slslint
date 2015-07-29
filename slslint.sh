@@ -2,11 +2,6 @@
 
 set -e
 
-if [ $(id -ur) -ne 0 ]
-then
-    exec sudo $0 $
-fi
-
 outdir=${1-/logs}
 
 find ${outdir} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
