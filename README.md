@@ -1,7 +1,19 @@
-slslint.sh finds all .sls files in /srv/salt/ and executes salt-call state.show_sls for each one.
+# Check your .sls files are syntactically correct
 
-There are also some scripts for launching this check inside Docker container.
+Script `slslint.sh` ensures .sls files are syntactically correct by following scenario:
 
-Build docker image like written in docker-build.sh
+1. find all `.sls` files in `/srv/salt/` directory;
+2. execute `salt-call state.show_sls` for each one;
+3. Stores execution results in logs directory;
+4. Check all log files for errors.
 
-Launch docker container like written in run.sh
+Checked conditions for each .sls:
+
+1. Exit code equals 0;
+2. stderr is empty;
+3. stdout does not contain error report;
+
+# Docker
+
+If you are familiar with [Docker](https://www.docker.com/),
+you can find files in `example` directory useful for building linting container.
