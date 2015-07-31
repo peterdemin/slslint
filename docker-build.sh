@@ -4,4 +4,4 @@ set -e
 
 HERE=$(cd "$(dirname ${BASH_SOURCE[0]})" && pwd)
 
-docker build --rm -t salt-linter $HERE
+docker build --rm -t slslint $HERE
