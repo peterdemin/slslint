@@ -4,10 +4,10 @@ Script `slslint.sh` ensures .sls files are syntactically correct by following sc
 
 1. find all `.sls` files in `/srv/salt/` directory;
 2. execute `salt-call state.show_sls` for each one;
-3. Stores execution results in logs directory;
+3. Store execution results in `logs` directory;
 4. Check all log files for errors.
 
-Checked conditions for each .sls:
+Checked conditions for each `.sls`:
 
 1. Exit code equals 0;
 2. stderr is empty;
