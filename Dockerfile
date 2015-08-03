@@ -6,5 +6,6 @@ RUN yum -y install sudo
 
 ADD example/minion /etc/salt/minion
 ADD slslint.sh /usr/bin/slslint
+ADD lint.py /usr/lib/python2.6/site-packages/lint.py
 
 CMD slslint
