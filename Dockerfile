@@ -8,4 +8,4 @@ ADD example/minion /etc/salt/minion
 ADD slslint.sh /usr/bin/slslint
 ADD lint.py /usr/lib/python2.6/site-packages/lint.py
 
-CMD slslint
+CMD python -m lint --stable /srv/salt && slslint
