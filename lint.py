@@ -9,7 +9,7 @@ A lint script for SaltStack SLS
 import re
 import sys
 import os
-import argparse
+import optparse
 
 
 IGNORED_EXTS = ['patch']
@@ -139,10 +139,11 @@ class LintCheckBadCronFilename(LintCheck):
             # no check absent SLS
             if fn.endswith('absent.sls'):
                 continue
-            data_without_jinja2_in_sid = {
-                lino: sid for lino, sid in
-                data.iteritems() if "{{" not in sid and "{%" not in sid
-            }
+            data_without_jinja2_in_sid = dict([
+                (lino, sid)
+                for lino, sid in data.iteritems()
+                if "{{" not in sid and "{%" not in sid
+            ])
             if data_without_jinja2_in_sid:
                 for_modify = data_without_jinja2_in_sid.copy()
                 for lino in data_without_jinja2_in_sid:
@@ -186,9 +187,12 @@ class LintCheckBadStateStyle(LintCheck):
             # TODO find a better solution for this than just skip .py files
             # e.g. if file name is .cfg or whatever contains '.'  in its name
             # currently, this works because we only extend *.py states.
-            data_without_pystates = {lino: sid for lino, sid in
-                                     data.iteritems()
-                                     if not sid.endswith(('.py:', '.conf:'))}
+            data_without_pystates = dict([
+                (lino, sid)
+                for lino, sid in data.iteritems()
+                if not sid.endswith(('.py:', '.conf:'))
+            ])
+
             if data_without_pystates:
                 filtered_found.update({fn: data_without_pystates})
 
@@ -212,7 +216,11 @@ class LintCheckNumbersOfOrderLast(LintCheck):
         if not exts:
             exts = ['jinja2', 'sls']
         found = _grep(paths, '- order: last', *exts)
-        many_last = {k: v for k, v in found.iteritems() if len(v) > 1}
+        many_last = dict([
+            (k, v)
+            for k, v in found.iteritems()
+            if len(v) > 1
+        ])
 
         if many_last:
             self.print_header(
@@ -419,19 +427,17 @@ def _parse_paths(raw_paths):
 
 
 def main():
-    argp = argparse.ArgumentParser()
-    argp.add_argument('--tabonly', '-t', action='store_true',
-                      help='only run lint check for tab character')
-    argp.add_argument('--stable', '-s', action='store_true',
-                      help='only run lint checks that considered stable')
-    argp.add_argument('--warn-nonstable', '-w', action='store_true',
-                      help='only print warning messages for non stable checks'
-                      ' always treat their results as passed checks')
-    argp.add_argument('paths', nargs='*', default=['.'],
-                      help='paths to check lint')
-    args = argp.parse_args()
+    argp = optparse.OptionParser()
+    argp.add_option('--tabonly', '-t', action='store_true',
+                    help='only run lint check for tab character')
+    argp.add_option('--stable', '-s', action='store_true',
+                    help='only run lint checks that considered stable')
+    argp.add_option('--warn-nonstable', '-w', action='store_true',
+                    help='only print warning messages for non stable checks'
+                    ' always treat their results as passed checks')
+    (args, paths) = argp.parse_args()
 
-    paths = _parse_paths(args.paths)
+    paths = _parse_paths(paths)
 
     all_lints = (LintCheckTabCharacter,
                  LintCheckBadCronFilename,
