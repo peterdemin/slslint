@@ -1,8 +1,6 @@
 FROM centos:6.6
 
-RUN yum -y install epel-release
-RUN yum -y install salt-minion
-RUN yum -y install sudo
+RUN yum -y install epel-release && yum -y install salt-minion sudo && yum clean all
 
 ADD example/minion /etc/salt/minion
 ADD slslint.sh /usr/bin/slslint
