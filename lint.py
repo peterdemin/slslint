@@ -419,8 +419,11 @@ def _parse_paths(raw_paths):
             dirs[:] = [d for d in dirs if not d[0] == '.']
             for fn in fns:
                 path = os.path.join(root, fn)
-                if not _is_binary_file(path):
-                    _paths.append(path)
+                if _is_binary_file(path):
+                    continue
+                if path.endswith('.txt'):
+                    continue
+                _paths.append(path)
         paths.extend(_paths)
 
     return set(paths) - _filter_files_with_exts(paths, IGNORED_EXTS)
