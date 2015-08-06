@@ -5,7 +5,7 @@ set -e
 outdir=${1-/logs}
 
 find ${outdir} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
-sls_files=($(cd /srv/salt && find -name '*.sls'))
+sls_files=($(cd /srv/salt && find -L -name '*.sls'))
 for sls_file in "${sls_files[@]}"
 do
     truncated=${sls_file#./}
