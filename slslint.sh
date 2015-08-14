@@ -2,18 +2,19 @@
 
 set -e
 
-outdir=${1-/logs}
+OUTDIR=${1-/logs}
+SALTDIR=${SALTDIR-/srv/salt}
 
-find ${outdir} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
-sls_files=($(cd /srv/salt && find -L -name '*.sls'))
+find ${OUTDIR} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
+sls_files=($(cd ${SALTDIR} && find -L -name '*.sls'))
 for sls_file in "${sls_files[@]}"
 do
     truncated=${sls_file#./}
     truncated=${truncated%.sls}
     dotted=$(echo $truncated | sed 's,/,.,g')
     echo "Checking sls:" $dotted
-    salt-call -lwarning state.show_sls "${dotted}" > "${outdir}/${dotted}.out" 2> "${outdir}/${dotted}.err"
-    echo -n $? > "${outdir}/${dotted}.code"
+    salt-call -lwarning $SALTOPTS state.show_sls "${dotted}" > "${OUTDIR}/${dotted}.out" 2> "${OUTDIR}/${dotted}.err"
+    echo -n $? > "${OUTDIR}/${dotted}.code"
 done
 
 function check_stdout() {
@@ -27,11 +28,11 @@ function check_stdout() {
     fi
 }
 
-if ! grep -v 0 ${outdir}/*.code
+if ! grep -v 0 ${OUTDIR}/*.code
 then
-    if [[ -z $(cat ${outdir}/*.err) ]]
+    if [[ -z $(cat ${OUTDIR}/*.err) ]]
     then
-        for outfile in ${outdir}/*.out
+        for outfile in ${OUTDIR}/*.out
         do
             check_stdout $outfile
         done
