@@ -3,18 +3,14 @@
 set -e
 
 OUTDIR=${1-/logs}
-SALTDIR=${SALTDIR-/srv/salt}
 
 find ${OUTDIR} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
-sls_files=($(cd ${SALTDIR} && find -L -name '*.sls'))
-for sls_file in "${sls_files[@]}"
+states=($(salt-call cp.list_states | awk '{print $2}' | grep -v '^top' | grep -v '^$' | sort))
+for state in "${states[@]}"
 do
-    truncated=${sls_file#./}
-    truncated=${truncated%.sls}
-    dotted=$(echo $truncated | sed 's,/,.,g')
-    echo "Checking sls:" $dotted
-    salt-call -lwarning $SALTOPTS state.show_sls "${dotted}" > "${OUTDIR}/${dotted}.out" 2> "${OUTDIR}/${dotted}.err"
-    echo -n $? > "${OUTDIR}/${dotted}.code"
+    echo "Checking sls:" $state
+    salt-call -lwarning $SALTOPTS state.show_sls "${state}" > "${OUTDIR}/${state}.out" 2> "${OUTDIR}/${state}.err"
+    echo -n $? > "${OUTDIR}/${state}.code"
 done
 
 function check_stdout() {
