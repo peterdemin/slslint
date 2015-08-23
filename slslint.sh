@@ -5,7 +5,7 @@ set -e
 OUTDIR=${1-/logs}
 
 find ${OUTDIR} -name "*.code" -o  -name "*.err" -o -name "*.out" | xargs rm -f
-states=($(salt-call cp.list_states | awk '{print $2}' | grep -v '^top' | grep -v '^$' | sort))
+states=($(salt-call $SALTOPTS cp.list_states | awk '{print $2}' | grep -v '^top' | grep -v '^$' | sort))
 for state in "${states[@]}"
 do
     echo "Checking sls:" $state
@@ -24,7 +24,7 @@ function check_stdout() {
     fi
 }
 
-if ! grep -v 0 ${OUTDIR}/*.code
+if ! grep -E '[^0]' ${OUTDIR}/*.code
 then
     if [[ -z $(cat ${OUTDIR}/*.err) ]]
     then
